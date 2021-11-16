@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+// refer Makefile on how to compile
+package auth.v1;
+
+import "api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/gmhafiz/opa_service/api/opa_v1";
+
+// Authorization query request required by OPA which is defined in rbac.rego
+// file
+message CheckRequest {
+  // user is the user ID
+  int64 user = 1;
+
+  // resource is the main api path. For example:
+  // /referees
+  // /users
+  string resource = 2;
+
+  // action corresponds to HTTP verbs
+  // GET, POST, PUT, DELETE
+  string action = 3;
+}
+
+// Result of the OPA policy evaluation
+message CheckResponse {
+
+  // allowed == true or disallowed == false
+  bool allowed = 1;
+}
+
+// RPC endpoints
+service Service {
+
+  // IsAllowed receives a request and check if it is allowed or not. OPA
+  // evaluates the request and checks against the policy.
+  rpc IsAllowed(CheckRequest) returns (CheckResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/opa/check"
+      body: "*"
+    };
+  }
+
+  // Checks if this gRPC API is up.
+  rpc Liveness(google.protobuf.Empty) returns (ErrorResponse) {
+    option (google.api.http) = {
+      get: "/health/liveness"
+    };
+  }
+
+  // Liveness also checks if this API is connected to the database
+  rpc Readiness(google.protobuf.Empty) returns (ErrorResponse) {
+    option (google.api.http) = {
+      get: "/health/readiness"
+    };
+  }
+}
+
+// ErrorResponse return HTTP status code
+message ErrorResponse {
+  StatusCode status_code = 1;
+}
+
+// Copy of HTTP status code
+// https://gist.github.com/matthewhartstonge/2f16e2b8cdd51668dcab6479fc73a0ac
+enum StatusCode {
+  StatusCode_UNSPECIFIED         = 0;
+  StatusCode_CONTINUE            = 100;
+  StatusCode_SWITCHING_PROTOCOLS = 101;
+  StatusCode_PROCESSING          = 102;
+
+  // 2×× Success
+  StatusCode_OK                           = 200;
+  StatusCode_CREATED                      = 201;
+  StatusCode_ACCEPTED                     = 202;
+  StatusCode_NONAUTHORITATIVE_INFORMATION = 203;
+  StatusCode_NO_CONTENT                   = 204;
+  StatusCode_RESET_CONTENT                = 205;
+  StatusCode_PARTIAL_CONTENT              = 206;
+  StatusCode_MULTI_STATUS                 = 207;
+  StatusCode_ALREADY_REPORTED             = 208;
+  StatusCode_IM_USED                      = 226;
+
+  // 3×× Redirection
+  StatusCode_MULTIPLE_CHOICES   = 300;
+  StatusCode_MOVED_PERMANENTLY  = 301;
+  StatusCode_FOUND              = 302;
+  StatusCode_SEE_OTHER          = 303;
+  StatusCode_NOT_MODIFIED       = 304;
+  StatusCode_USE_PROXY          = 305;
+  StatusCode_TEMPORARY_REDIRECT = 307;
+  StatusCode_PERMANENT_REDIRECT = 308;
+
+  // 4×× Client Error
+  StatusCode_BAD_REQUEST                        = 400;
+  StatusCode_UNAUTHORIZED                       = 401;
+  StatusCode_PAYMENT_REQUIRED                   = 402;
+  StatusCode_FORBIDDEN                          = 403;
+  StatusCode_NOT_FOUND                          = 404;
+  StatusCode_METHOD_NOT_ALLOWED                 = 405;
+  StatusCode_NOT_ACCEPTABLE                     = 406;
+  StatusCode_PROXY_AUTHENTICATION_REQUIRED      = 407;
+  StatusCode_REQUEST_TIMEOUT                    = 408;
+  StatusCode_CONFLICT                           = 409;
+  StatusCode_GONE                               = 410;
+  StatusCode_LENGTH_REQUIRED                    = 411;
+  StatusCode_PRECONDITION_FAILED                = 412;
+  StatusCode_PAYLOAD_TOO_LARGE                  = 413;
+  StatusCode_REQUEST_URI_TOO_LONG               = 414;
+  StatusCode_UNSUPPORTED_MEDIA_TYPE             = 415;
+  StatusCode_REQUESTED_RANGE_NOT_SATISFIABLE    = 416;
+  StatusCode_EXPECTATION_FAILED                 = 417;
+  StatusCode_IM_A_TEAPOT                        = 418;
+  StatusCode_MISDIRECTED_REQUEST                = 421;
+  StatusCode_UNPROCESSABLE_ENTITY               = 422;
+  StatusCode_LOCKED                             = 423;
+  StatusCode_FAILED_DEPENDENCY                  = 424;
+  StatusCode_UPGRADE_REQUIRED                   = 426;
+  StatusCode_PRECONDITION_REQUIRED              = 428;
+  StatusCode_TOO_MANY_REQUESTS                  = 429;
+  StatusCode_REQUEST_HEADER_FIELDS_TOO_LARGE    = 431;
+  StatusCode_CONNECTION_CLOSED_WITHOUT_RESPONSE = 444;
+  StatusCode_UNAVAILABLE_FOR_LEGAL_REASONS      = 451;
+  StatusCode_CLIENT_CLOSED_REQUEST              = 499;
+
+  // 5×× Server Error
+  StatusCode_INTERNAL_SERVER_ERROR           = 500;
+  StatusCode_NOT_IMPLEMENTED                 = 501;
+  StatusCode_BAD_GATEWAY                     = 502;
+  StatusCode_SERVICE_UNAVAILABLE             = 503;
+  StatusCode_GATEWAY_TIMEOUT                 = 504;
+  StatusCode_HTTP_VERSION_NOT_SUPPORTED      = 505;
+  StatusCode_VARIANT_ALSO_NEGOTIATES         = 506;
+  StatusCode_INSUFFICIENT_STORAGE            = 507;
+  StatusCode_LOOP_DETECTED                   = 508;
+  StatusCode_NOT_EXTENDED                    = 510;
+  StatusCode_NETWORK_AUTHENTICATION_REQUIRED = 511;
+  StatusCode_NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
+}

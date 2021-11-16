@@ -1,0 +1,28 @@
+# curl --location --request GET 'http://localhost:8091/health'
+GET http://localhost:8091/health
+
+###
+
+# curl --location --request GET 'http://localhost:8091/liveness'
+GET http://localhost:8091/liveness
+
+###
+
+# curl --location --request POST 'http://localhost:8091/api/v1/opa/check'
+#--header 'Content-Type: application/json'
+#--data-raw '{
+#    "user": 1,
+#    "resource": "referees",
+#    "action": "GET"
+#}'
+POST http://localhost:8091/api/v1/opa/check
+Content-Type: application/json
+
+{
+  "user": 1,
+  "resource": "referees",
+  "action": "GET"
+}
+
+###
+
