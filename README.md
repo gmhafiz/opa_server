@@ -38,17 +38,26 @@ Or simply use `Makefile` to compile by typing
 
     make install
 
+## Database
+
+    docker run --name postgres14 -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=user -e POSTGRES_DB=opa -d postgres:14
+
+    # or
+    docker-compose -d postgres up 
+
+
 # Run
 
     make dev
     # or
     go run cmd/opa/main.go
-
+    # or
+    docker-compose up -d server
 
 # Benchmark
 
 OPA policy is cached instead of hitting a database. As a result, evaluation is
-extremely fast, capable of handling **24419.12** requests per second.
+extremely fast, capable of handling **24419** requests per second.
 
 CPU: AMD 3600 3.6GHz
 

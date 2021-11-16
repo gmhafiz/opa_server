@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+
+  server:
+    image: "opa/server"
+    container_name: "opa_container"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ["/App/server/main"]
+    ports:
+      - ${API_PORT}:${API_PORT}
+
+  postgres:
+    image: "postgres:14"
+    restart: always
+    container_name: "opa_postgres"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
+    expose:
+      - "5432"
+    volumes:
+      - postgres14opadb:/var/lib/postgresql/data
+
+volumes:
+  postgres14opadb:

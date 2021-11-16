@@ -16,6 +16,7 @@ check:
 	gosec -quiet ./...
 
 dev:
+	go mod tidy
 	go run cmd/opa/main.go
 
 install:
