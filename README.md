@@ -66,5 +66,5 @@ Transfer/sec:      2.89MB
 
 # TODO
 
-[ ] Implement OPA Bundle API to update policy from external/internal database with schema of `users`, `roles` aand `user_roles`.
-[ ] Database to trigger API to update policy everytime any of the tables are modified.
+ - [ ] Implement OPA Bundle API to update policy from external/internal database with schema of `users`, `roles` and `user_roles`.
+ - [ ] Database to trigger API to update policy everytime any of the tables are modified.
